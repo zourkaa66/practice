@@ -1,0 +1,32 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Kotlin
+.kotlin/
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Secrets and local env (never commit these)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local Docker data (used from LIB-3)
+postgres-data/
