@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(ktorLibs.plugins.ktor)
@@ -23,6 +25,7 @@ dependencies {
     implementation(ktorLibs.server.contentNegotiation)
     implementation(ktorLibs.serialization.kotlinx.json)
     implementation(libs.logback.classic)
+    implementation(libs.kotlin.logging)
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
