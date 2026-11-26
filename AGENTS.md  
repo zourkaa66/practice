@@ -1,0 +1,62 @@
+
+## Agent directives (strict)
+- CRITICAL: SQL only in PostgreSQL dialect.
+- CRITICAL: migration files must always be wrapped in a transaction (BEGIN / COMMIT).
+- CRITICAL: always warn when uncommitted changes expose secrets or sensitive information.
+- CRITICAL: always warn when uncommitted changes introduce SQL injection.
+  (omitting it means admin-only; may be intentional but must be explicit).
+
+## Feature-addition order
+1. Check application.conf and ConfigurationProvider.kt for active configs.
+2. Define model/ (domain entities) and dto/ (API contracts).
+3. Persistence in repository/ with Exposed DSL.
+4. Business logic in service/ plus tests.
+5. Wire HTTP endpoints in route/ and Koin injection in modules/.
+
+## Git
+Conventional Commits (feat:, fix:, chore:). Prepend the JIRA ticket if known,
+e.g. feat(LIB-123): add transport ...
+
+## Tech stack
+Kotlin (JVM, Java toolchain 21) · Ktor 3.2.3 · Koin 4.1.0 · Exposed 0.61.0 + Postgres 18 + Flyway ·
+kotlinx.serialization with explicit @SerialName and custom serializers · Nakadi publishing/consumption ·
+Docker image from fat jar + observability java agent · CDP pipeline with FabricGateway, StackSet,
+platform CRDs under deploy/{test,preprod,prod}/apply/ · kotlinter 5.5.0 · detekt 1.23.8
+
+## Code style
+- Formatting enforced by ktlint (kotlinter: ignoreFormatFailures = false, ignoreLintFailures = false,
+  reporters checkstyle + plain); rules in .editorconfig; run `make format` before committing.
+- Naming: classes/DTOs PascalCase; functions/properties camelCase; tests use backtick names;
+  routes registered as extension functions on Route; names describe what things do.
+- Serialization: @Serializable on DTOs; explicit @SerialName("snake_case") on external payloads;
+  reuse serializers under serializer/ (UUIDSerializer, LocalDateSerializer, OffsetDateTimeSerializer);
+  every DTO implements the Dto interface.
+- Logging: io.github.oshai.kotlinlogging.KLogger everywhere; prod logs JSON, local logs text,
+  both via src/main/resources/logback.xml; flowId propagated into MDC.
+- Errors: use the Errors hierarchy in result/Errors.kt (Errors.ValidationError, Errors.NotFoundError,
+  or a specific service error), never ad hoc RuntimeException; StatusPages turns them into
+  RFC 7807 problem responses.
+  Example: `repository.findById(id) ?: throw Errors.NotFoundError("Transport", id.toString())`
+- Database: Exposed SQL DSL (not DAO); transactions via transaction(database) { ... } in repository
+  methods; always pass the wired Database into repository constructors; Flyway is the source of truth
+  for schema; raw SQL only when the DSL is impossible or much less convenient.
+
+## General rules
+- Immutable objects by default; functions do not mutate state unless clearly justified.
+- Every new logic/feature is covered by tests.
+- Three layers API → Domain → Data access, one direction only; contracts via interfaces.
+- No magic numbers (named constants); avoid deep nesting; ~120-char line limit.
+- Follow existing structure and patterns.
+- No default values on model/DTO properties (causes bugs in layer transformations).
+
+## Surgical changes
+- Touch only what you must; clean up only your own mess.
+- Don't "improve" adjacent code, comments or formatting; don't refactor what isn't broken.
+- Match existing style. Mention unrelated dead code, don't delete it.
+- Remove imports/variables/functions your own change made unused.
+- Every changed line should trace to the request.
+
+## Simplicity first
+- Minimum code that solves the problem. No speculative features, no single-use abstractions,
+  no unrequested configurability, no error handling for impossible cases.
+- If 200 lines could be 50, rewrite. Would a senior engineer call it overcomplicated? Then simplify.
