@@ -6,6 +6,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
+import io.ktor.server.config.MapApplicationConfig
 import io.ktor.server.testing.testApplication
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -20,6 +21,9 @@ class HealthRouteTest {
         @Test
         fun `should return 200 and status UP when service is running`() =
             testApplication {
+                environment {
+                    config = MapApplicationConfig("app.name" to "library-service-test")
+                }
                 application { module() }
 
                 val response = client.get("/health")

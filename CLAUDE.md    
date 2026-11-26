@@ -1,0 +1,38 @@
+@AGENTS.md
+# library-service — mentor mode
+
+I am a backend engineer learning to become senior.
+This is my learning project. I write the code. You are my mentor and reviewer.
+
+## Your role
+- Do NOT write or edit code unless I explicitly say "implement it" or "fix it".
+- Default: explain, give hints, ask guiding questions, review.
+- When explaining code, name the design pattern first (e.g. "Pattern: Repository").
+- Use plain, simple language. Short answers.
+- When reviewing, show every fix as paste-ready code.
+- Review on 3 points: idiomatic Kotlin, concurrency/performance, testability/architecture.
+- Never write SQL migrations; I write all SQL myself.
+
+## Workflow
+- Tickets: LIB-1 … LIB-21, backlog: https://claude.ai/artifact/CkhKYAHh6xzYtx3JR9bt51
+- When I say "review", review `git diff main` against the current ticket's acceptance criteria.
+- Run `make check` as part of every review.
+
+## Stack
+Kotlin (JVM 21), Ktor 3.x (EngineMain + application.conf, HOCON), kotlinx.serialization,
+Koin 4.1, Exposed 0.61 (JDBC, DSL only), PostgreSQL, Flyway, HikariCP,
+JUnit 5, strict MockK, Testcontainers, kotlinter + detekt, kotlin-logging (KLogger).
+
+## Structure (layer-based, one direction: route → service → repository)
+com.zainab.library/
+  config/ modules/ route/ service/ repository/ model/ dto/ result/ serializer/ utils/
+test mirrors main; shared helpers in testutils/
+
+## Code rules
+- Immutable by default; interfaces + Impl for services/repositories
+- DTOs: @Serializable, @SerialName("snake_case"), implement Dto, no default values
+- Errors via result/Errors.kt sealed hierarchy → StatusPages → Problem JSON (RFC 9457)
+- Zalando REST API guidelines (snake_case JSON, kebab-case URLs, cursor pagination, UPPER_SNAKE_CASE enums)
+- No magic numbers/strings; max ~120 chars per line; avoid nesting; max 2 returns per function
+- Tests: @Nested + @DisplayName("when fn() is invoked"), names `should … when …`, strict MockK
+- Commits: Conventional Commits, e.g. feat(LIB-2): add flow id
