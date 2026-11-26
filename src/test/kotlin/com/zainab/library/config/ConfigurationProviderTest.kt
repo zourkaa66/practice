@@ -23,9 +23,10 @@ class ConfigurationProviderTest {
 
         @Test
         fun `should throw when app name is missing`() {
-            val exception = assertThrows<IllegalArgumentException> {
-                ConfigurationProvider.load(MapApplicationConfig())
-            }
+            val exception =
+                assertThrows<IllegalArgumentException> {
+                    ConfigurationProvider.load(MapApplicationConfig())
+                }
 
             assertEquals("Missing required config 'app.name'", exception.message)
         }

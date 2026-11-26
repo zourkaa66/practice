@@ -26,6 +26,8 @@ dependencies {
     implementation(ktorLibs.serialization.kotlinx.json)
     implementation(libs.logback.classic)
     implementation(libs.kotlin.logging)
+    implementation(ktorLibs.server.callId)
+    implementation(ktorLibs.server.callLogging)
 
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)

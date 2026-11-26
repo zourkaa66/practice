@@ -10,6 +10,6 @@ import io.ktor.server.routing.get
 fun Route.healthRoute() {
     get("/health") {
         val dto = HealthDto(HealthStatus.UP)
-        call.respond( HttpStatusCode.OK, dto)
+        call.respond(HttpStatusCode.OK, dto)
     }
 }
